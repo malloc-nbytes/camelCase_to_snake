@@ -1,3 +1,5 @@
+let glbl_all : bool ref = ref false
+
 let usage () =
   let _ = print_endline "Usage:"
   and _ = print_endline "  ccts <files/dirs...>" in
@@ -84,11 +86,15 @@ let process_line line row =
        if word_not_camelcase wordlst then
          wordstr ^ aux rest (col + wordlen)
        else
-         (match confirm_input line col end_col row with
-          | "y" | "Y" ->
+         if !glbl_all = true then
              let new_word = convert_word wordlst in
              new_word ^ aux rest 0
-          | _ -> wordstr ^ aux rest (col + wordlen))
+         else
+           (match confirm_input line col end_col row with
+            | "y" | "Y" ->
+               let new_word = convert_word wordlst in
+               new_word ^ aux rest 0
+            | _ -> wordstr ^ aux rest (col + wordlen))
 
     | hd :: tl -> (String.make 1 hd) ^ (aux tl (col+1))
   in
@@ -116,6 +122,8 @@ let () =
         match is_dir arg with
         | true -> failwith "directory support not implemented"
         | false ->
+           let _ = print_string "Replace all? (y/n): " in
+           let _ = match read_line () with | "Y" | "y" -> glbl_all := true | _ -> glbl_all := false in
            let res = ccts arg in
            let _ = print_endline "res:" in
            print_endline res) (List.tl (Array.to_list argv))
