@@ -93,7 +93,7 @@ let confirm_input line start_col end_col row =
     | k when k >= start_col-1 && k <= end_col-1 -> let _ = print_string "^" in f (i+1)
     | _ -> print_endline "" in
   let _ = f 0
-  and _ = print_string "[ccts]: Replace? ((y)es / (n)o / ! [replace rest]): " in
+  and _ = print_string "[ccts]: Replace? (y)es / (n)o / ! [replace rest]: " in
   read_line ()
 ;;
 
