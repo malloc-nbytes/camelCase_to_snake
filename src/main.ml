@@ -120,28 +120,46 @@ let ccts fp =
   aux lines 1
 ;;
 
+let get_dir_contents dir =
+  try
+    let items = Sys.readdir dir in
+    Array.to_list items
+  with
+  | Sys_error msg ->
+    let _ = Printf.printf "[Error]: %s\n" msg in []
+;;
+
+let rec is_binary filepath i =
+  match i = String.length filepath - 1 with
+  | true -> true
+  | false when filepath.[i] = '.' -> false
+  | false -> is_binary filepath (i+1)
+;;
+
+let rec kill_all_camels_in_file filepath =
+  match is_dir filepath with
+  | true ->
+     let items = get_dir_contents filepath in
+     List.iter (fun item -> kill_all_camels_in_file (Filename.concat filepath item)) items
+  | false when is_binary filepath 0 -> ()
+  | false ->
+     let _ = Printf.printf "[ccts]: File: %s\n" filepath
+     and _ = print_string "[ccts]: Replace all? (y/n): "
+     and _ = match read_line () with | "Y" | "y" -> glbl_repl_all := true
+                                     | _ -> glbl_repl_all := false
+     and res = ccts filepath in
+
+     (* QAD solution for the extra newline bug. *)
+     let res = String.to_seq res |> List.of_seq |> List.rev in
+     let res = if List.hd res = '\n' then List.rev (List.tl res)
+               else res in
+     let res = List.to_seq res |> String.of_seq in
+     write_to_file filepath res
+;;
+
 let () =
   let argv = Sys.argv
   and argc = Array.length Sys.argv in
-
   if argc < 2 then usage ()
-  else
-    List.iter (fun arg ->
-        match is_dir arg with
-        | true -> failwith "directory support not implemented"
-        | false ->
-           let _ = Printf.printf "[ccts]: File: %s\n" arg
-           and _ = print_string "[ccts]: Replace all? (y/n): "
-           and _ = match read_line () with | "Y" | "y" -> glbl_repl_all := true
-                                           | _ -> glbl_repl_all := false
-           and res = ccts arg in
-
-           (* QAD solution for the extra newline bug. *)
-           let res = String.to_seq res |> List.of_seq |> List.rev in
-           let res = if List.hd res = '\n' then List.rev (List.tl res)
-                     else res in
-           let res = List.to_seq res |> String.of_seq in
-           print_string res
-           (* write_to_file arg res *)
-           ) (List.tl (Array.to_list argv))
+  else List.iter (fun arg -> kill_all_camels_in_file arg) (Array.to_list argv |> List.tl)
 ;;
