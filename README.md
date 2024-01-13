@@ -1,4 +1,4 @@
-# CamelCase_to_snake
+# camelCase_to_snake
 
 Kill those camels!
 
