@@ -58,5 +58,5 @@ cd ./CamelCase_to_snake/src/
 
 <small> *"Just like in code, where snake_case gracefully slithers through the syntax, effortlessly gliding from variable to variable, leaving no humps in its path, it's clear that in the programming desert, snakes are simply superior to camels. No need for extra bumps when you can have the smooth elegance of snake_case."*
 
-- ChatGPT for some reason </small>
+\- ChatGPT for some reason </small>
 
