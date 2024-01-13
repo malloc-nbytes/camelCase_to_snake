@@ -41,8 +41,9 @@ let rec convert_word wordlst =
   | hd :: tl -> String.make 1 hd ^ convert_word tl
 ;;
 
-let confirm_input line start_col end_col =
-  let _ = print_endline line in
+let confirm_input line start_col end_col row =
+  let _ = Printf.printf "[ccts]: Line %d\n" row
+  and _ = print_endline line in
   let rec f i =
     match i with
     | k when k < start_col-1 -> let _ = print_string " " in f (i+1)
@@ -69,7 +70,7 @@ let word_not_camelcase wordlst =
        List.for_all (fun c -> is_lowercase c) wordlst
 ;;
 
-let process_line line =
+let process_line line row =
   let rec aux lst col =
     match lst with
     | [] -> "\n"
@@ -83,7 +84,7 @@ let process_line line =
        if word_not_camelcase wordlst then
          wordstr ^ aux rest (col + wordlen)
        else
-         (match confirm_input line col end_col with
+         (match confirm_input line col end_col row with
           | "y" | "Y" ->
              let new_word = convert_word wordlst in
              new_word ^ aux rest 0
@@ -92,15 +93,18 @@ let process_line line =
     | hd :: tl -> (String.make 1 hd) ^ (aux tl (col+1))
   in
   aux (line |> String.to_seq |> List.of_seq) 1
+;;
 
 let ccts fp =
   let contents = file_to_str fp in
   let lines = String.split_on_char '\n' contents in
-  let rec aux = function
+  let rec aux line row =
+    match line with
     | [] -> "\n"
-    | line :: tl -> process_line line ^ aux tl
+    | line :: tl -> process_line line row ^ aux tl (row+1)
   in
-  aux lines
+  aux lines 1
+;;
 
 let () =
   let argv = Sys.argv
@@ -114,6 +118,5 @@ let () =
         | false ->
            let res = ccts arg in
            let _ = print_endline "res:" in
-           print_endline res
-      ) (List.tl (Array.to_list argv))
+           print_endline res) (List.tl (Array.to_list argv))
 ;;
