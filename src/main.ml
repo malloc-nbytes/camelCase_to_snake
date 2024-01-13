@@ -25,7 +25,11 @@ let glbl_repl_all : bool ref = ref false
 
 let usage () =
   let _ = print_endline "Usage:"
-  and _ = print_endline "  ccts <files/dirs...>" in
+  and _ = print_endline "  ccts <files/dirs...>"
+  and _ = print_endline "Info:"
+  and _ = print_endline "  If one of the given files is a directory, it will"
+  and _ = print_endline "    recursively explore that directory and run this program"
+  and _ = print_endline "    on all subfiles/directories." in
   failwith "usage"
 ;;
 
@@ -132,8 +136,7 @@ let process_line line row =
          else
            (match confirm_input line col end_col row with
             | "Y" | "y" | "Yes" | "yes" -> f ()
-            | "!" -> let _ = glbl_repl_all := true in
-                     f ()
+            | "!" -> let _ = glbl_repl_all := true in f ()
             | "N" | "n" | "No" | "no" -> wordstr ^ aux rest @@ col+wordlen
             | c -> let _ = Printf.printf "[ccts]: Invalid input: `%s`.\n" c in
                    aux lst col)
