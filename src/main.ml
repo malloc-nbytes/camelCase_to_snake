@@ -145,7 +145,9 @@ let ccts fp =
   let rec aux line row =
     match line with
     | [] -> ""
-    | line :: tl -> process_line line row ^ aux tl (row+1)
+    | line :: tl ->
+       let s = process_line line row in
+       s ^ aux tl (row+1)
   in
   aux lines 1
 ;;
