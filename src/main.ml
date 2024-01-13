@@ -89,7 +89,7 @@ let confirm_input line start_col end_col row =
     | k when k >= start_col-1 && k <= end_col-1 -> let _ = print_string "^" in f (i+1)
     | _ -> print_endline "" in
   let _ = f 0
-  and _ = print_string "[ccts]: Replace? (y/n/! [replace rest]): " in
+  and _ = print_string "[ccts]: Replace? ((y)es / (n)o / ! [replace rest]): " in
   read_line ()
 ;;
 
@@ -131,10 +131,10 @@ let process_line line row =
          if !glbl_repl_all = true then f ()
          else
            (match confirm_input line col end_col row with
-            | "y" | "Y" -> f ()
+            | "Y" | "y" | "Yes" | "yes" -> f ()
             | "!" -> let _ = glbl_repl_all := true in
                      f ()
-            | "N" | "n" -> wordstr ^ aux rest @@ col+wordlen
+            | "N" | "n" | "No" | "no" -> wordstr ^ aux rest @@ col+wordlen
             | c -> let _ = Printf.printf "[ccts]: Invalid input: `%s`.\n" c in
                    aux lst col)
 
@@ -172,13 +172,13 @@ let rec kill_all_camels_in_file filepath =
      List.iter (fun item -> kill_all_camels_in_file (Filename.concat filepath item)) items
   | false ->
      let _ = Printf.printf "[ccts]: File: %s\n" filepath
-     and _ = print_string "[ccts]: Replace all? ((y)es/(n)o/(c)ustom): " in
+     and _ = print_string "[ccts]: Replace all? ((y)es / (n)o / (c)ustom): " in
      (match read_line () with
-      | "Y" | "y" -> let _ = glbl_repl_all := true in
+      | "Y" | "y" | "Yes" | "yes" -> let _ = glbl_repl_all := true in
                      write_to_file filepath (ccts filepath)
-      | "C" | "c" -> let _ = glbl_repl_all := false in
+      | "C" | "c" | "Custom" | "custom" -> let _ = glbl_repl_all := false in
                      write_to_file filepath (ccts filepath)
-      | "N" | "n" -> ()
+      | "N" | "n" | "No" | "no" -> ()
       | c -> let _ = Printf.printf "[ccts]: Invalid input `%s`\n" c in
              kill_all_camels_in_file filepath)
 ;;
