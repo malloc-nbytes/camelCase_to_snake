@@ -2,4 +2,4 @@
 
 set -xe
 
-ocamlfind ocamlc -o main main.ml -linkpkg -package unix
+ocamlfind ocamlc -o ccts main.ml -linkpkg -package unix

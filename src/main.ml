@@ -148,12 +148,6 @@ let rec kill_all_camels_in_file filepath =
      and _ = match read_line () with | "Y" | "y" -> glbl_repl_all := true
                                      | _ -> glbl_repl_all := false
      and res = ccts filepath in
-
-     (* QAD solution for the extra newline bug. *)
-     let res = String.to_seq res |> List.of_seq |> List.rev in
-     let res = if List.hd res = '\n' then List.rev (List.tl res)
-               else res in
-     let res = List.to_seq res |> String.of_seq in
      write_to_file filepath res
 ;;
 
