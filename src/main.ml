@@ -1,4 +1,4 @@
-let glbl_all : bool ref = ref false
+let glbl_repl_all : bool ref = ref false
 
 let usage () =
   let _ = print_endline "Usage:"
@@ -17,6 +17,12 @@ let file_to_str fp =
   let ch = open_in_bin fp in
   let s = really_input_string ch (in_channel_length ch) in
   let _ = close_in ch in s
+;;
+
+let write_to_file filename content =
+  let channel = open_out filename in
+  output_string channel content;
+  close_out channel
 ;;
 
 let is_dir fp =
@@ -51,8 +57,8 @@ let confirm_input line start_col end_col row =
     | k when k < start_col-1 -> let _ = print_string " " in f (i+1)
     | k when k >= start_col-1 && k <= end_col-1 -> let _ = print_string "^" in f (i+1)
     | _ -> print_endline "" in
-  let _ = f 0 in
-  let _ = print_string "[ccts]: replace? (y/n): " in
+  let _ = f 0
+  and _ = print_string "[ccts]: replace? (y/n): " in
   read_line ()
 ;;
 
@@ -76,6 +82,7 @@ let process_line line row =
   let rec aux lst col =
     match lst with
     | [] -> "\n"
+    | hd :: tl when hd = '\n' -> aux tl (col+1)
     | hd :: tl when isalpha hd ->
        let wordlst, rest = consume_until (hd :: tl) (fun c -> not (isalpha c)) in
        let wordstr = List.to_seq wordlst |> String.of_seq in
@@ -83,27 +90,28 @@ let process_line line row =
        let wordlen = String.length wordstr in
        let end_col = col - 1 + String.length wordstr in
 
+       let f () =
+         let new_word = convert_word wordlst in
+         new_word ^ aux rest (col+wordlen) in
+
        if word_not_camelcase wordlst then
          wordstr ^ aux rest (col + wordlen)
        else
-         if !glbl_all = true then
-             let new_word = convert_word wordlst in
-             new_word ^ aux rest 0
+         if !glbl_repl_all = true then f ()
          else
            (match confirm_input line col end_col row with
-            | "y" | "Y" ->
-               let new_word = convert_word wordlst in
-               new_word ^ aux rest 0
-            | _ -> wordstr ^ aux rest (col + wordlen))
+            | "y" | "Y" -> f ()
+            | _ -> wordstr ^ aux rest @@ col + wordlen)
 
-    | hd :: tl -> (String.make 1 hd) ^ (aux tl (col+1))
+    | hd :: tl -> (String.make 1 hd) ^ (aux tl @@ col+1)
   in
   aux (line |> String.to_seq |> List.of_seq) 1
 ;;
 
 let ccts fp =
   let contents = file_to_str fp in
-  let lines = String.split_on_char '\n' contents in
+  let lines = String.split_on_char '\n' contents
+              |> List.rev |> List.tl |> List.rev in
   let rec aux line row =
     match line with
     | [] -> "\n"
@@ -122,9 +130,18 @@ let () =
         match is_dir arg with
         | true -> failwith "directory support not implemented"
         | false ->
-           let _ = print_string "Replace all? (y/n): " in
-           let _ = match read_line () with | "Y" | "y" -> glbl_all := true | _ -> glbl_all := false in
-           let res = ccts arg in
-           let _ = print_endline "res:" in
-           print_endline res) (List.tl (Array.to_list argv))
+           let _ = Printf.printf "[ccts]: File: %s\n" arg
+           and _ = print_string "[ccts]: Replace all? (y/n): "
+           and _ = match read_line () with | "Y" | "y" -> glbl_repl_all := true
+                                           | _ -> glbl_repl_all := false
+           and res = ccts arg in
+
+           (* QAD solution for the extra newline bug. *)
+           let res = String.to_seq res |> List.of_seq |> List.rev in
+           let res = if List.hd res = '\n' then List.rev (List.tl res)
+                     else res in
+           let res = List.to_seq res |> String.of_seq in
+           print_string res
+           (* write_to_file arg res *)
+           ) (List.tl (Array.to_list argv))
 ;;
