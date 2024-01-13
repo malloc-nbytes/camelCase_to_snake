@@ -9,6 +9,8 @@ let isalpha c =
   (c >= 65 && c <= 90) || (c >= 97 && c <= 122)
 ;;
 
+let is_lowercase c = Char.lowercase_ascii c = c;;
+
 let file_to_str fp =
   let ch = open_in_bin fp in
   let s = really_input_string ch (in_channel_length ch) in
@@ -31,15 +33,24 @@ let consume_until lst predicate =
   aux lst []
 ;;
 
-let convert_word word = failwith "todo"
+let rec convert_word wordlst =
+  match wordlst with
+  | [] -> ""
+  | hd :: tl when not (is_lowercase hd) ->
+     "_" ^ (String.make 1 (Char.lowercase_ascii hd)) ^ (convert_word tl)
+  | hd :: tl -> String.make 1 hd ^ convert_word tl
 
 let confirm_input line start_col end_col =
-  let _ = Printf.printf "%d %d\n" start_col end_col in
   let _ = print_endline line in
-  false
+  let rec f i =
+    match i with
+    | k when k < start_col-1 -> let _ = Printf.printf " " in f (i+1)
+    | k when k >= start_col-1 && k <= end_col-1 -> let _ = Printf.printf "^" in f (i+1)
+    | _ -> print_endline "" in
+  let _ = f 0 in
+  read_line () = "y"
 
 let word_not_camelcase wordlst =
-  let is_lowercase c = Char.lowercase_ascii c = c in
   match wordlst with
   | [] -> true
   | [x] -> true
