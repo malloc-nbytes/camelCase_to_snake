@@ -1,3 +1,26 @@
+(* MIT License *)
+
+(* Copyright (c) 2024 malloc-nbytes *)
+
+(* Permission is hereby granted, free of charge, to any person obtaining a copy *)
+(* of this software and associated documentation files (the "Software"), to deal *)
+(* in the Software without restriction, including without limitation the rights *)
+(* to use, copy, modify, merge, publish, distribute, sublicense, and/or sell *)
+(* copies of the Software, and to permit persons to whom the Software is *)
+(* furnished to do so, subject to the following conditions: *)
+
+(* The above copyright notice and this permission notice shall be included in all *)
+(* copies or substantial portions of the Software. *)
+
+(* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR *)
+(* IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, *)
+(* FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE *)
+(* AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER *)
+(* LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, *)
+(* OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE *)
+(* SOFTWARE. *)
+
+(* Used to determine whether or not to replace all matches *)
 let glbl_repl_all : bool ref = ref false
 
 let usage () =
@@ -110,11 +133,10 @@ let process_line line row =
 
 let ccts fp =
   let contents = file_to_str fp in
-  let lines = String.split_on_char '\n' contents
-              |> List.rev |> List.tl |> List.rev in
+  let lines = String.split_on_char '\n' contents in
   let rec aux line row =
     match line with
-    | [] -> "\n"
+    | [] -> ""
     | line :: tl -> process_line line row ^ aux tl (row+1)
   in
   aux lines 1
@@ -144,11 +166,13 @@ let rec kill_all_camels_in_file filepath =
   | false when is_binary filepath 0 -> ()
   | false ->
      let _ = Printf.printf "[ccts]: File: %s\n" filepath
-     and _ = print_string "[ccts]: Replace all? (y/n): "
-     and _ = match read_line () with | "Y" | "y" -> glbl_repl_all := true
-                                     | _ -> glbl_repl_all := false
-     and res = ccts filepath in
-     write_to_file filepath res
+     and _ = print_string "[ccts]: Replace all? ((y)es/(n)o/(c)ustom): " in
+     (match read_line () with
+      | "Y" | "y" -> let _ = glbl_repl_all := true in
+                     write_to_file filepath (ccts filepath)
+      | "C" | "c" -> let _ = glbl_repl_all := false in
+                     write_to_file filepath (ccts filepath)
+      | _ -> ())
 ;;
 
 let () =
