@@ -81,7 +81,7 @@ let rec convert_word wordlst =
 ;;
 
 let confirm_input line start_col end_col row =
-  let _ = Printf.printf "[ccts]: Line %d\n" row
+  let _ = Printf.printf "\n[ccts]: Line %d\n" row
   and _ = print_endline line in
   let rec f i =
     match i with
@@ -126,7 +126,7 @@ let process_line line row =
          new_word ^ aux rest (col+wordlen) in
 
        if word_not_camelcase wordlst then
-         wordstr ^ aux rest (col + wordlen)
+         wordstr ^ aux rest (col+wordlen)
        else
          if !glbl_repl_all = true then f ()
          else
@@ -134,7 +134,7 @@ let process_line line row =
             | "y" | "Y" -> f ()
             | "!" -> let _ = glbl_repl_all := true in
                      f ()
-            | "N" | "n" -> wordstr ^ aux rest @@ col + wordlen
+            | "N" | "n" -> wordstr ^ aux rest @@ col+wordlen
             | c -> let _ = Printf.printf "[ccts]: Invalid input: `%s`.\n" c in
                    aux lst col)
 
@@ -178,7 +178,9 @@ let rec kill_all_camels_in_file filepath =
                      write_to_file filepath (ccts filepath)
       | "C" | "c" -> let _ = glbl_repl_all := false in
                      write_to_file filepath (ccts filepath)
-      | _ -> ())
+      | "N" | "n" -> ()
+      | c -> let _ = Printf.printf "[ccts]: Invalid input `%s`\n" c in
+             kill_all_camels_in_file filepath)
 ;;
 
 let () =
