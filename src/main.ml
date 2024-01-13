@@ -39,16 +39,19 @@ let rec convert_word wordlst =
   | hd :: tl when not (is_lowercase hd) ->
      "_" ^ (String.make 1 (Char.lowercase_ascii hd)) ^ (convert_word tl)
   | hd :: tl -> String.make 1 hd ^ convert_word tl
+;;
 
 let confirm_input line start_col end_col =
   let _ = print_endline line in
   let rec f i =
     match i with
-    | k when k < start_col-1 -> let _ = Printf.printf " " in f (i+1)
-    | k when k >= start_col-1 && k <= end_col-1 -> let _ = Printf.printf "^" in f (i+1)
+    | k when k < start_col-1 -> let _ = print_string " " in f (i+1)
+    | k when k >= start_col-1 && k <= end_col-1 -> let _ = print_string "^" in f (i+1)
     | _ -> print_endline "" in
   let _ = f 0 in
-  read_line () = "y"
+  let _ = print_string "[ccts]: replace? (y/n): " in
+  read_line ()
+;;
 
 let word_not_camelcase wordlst =
   match wordlst with
@@ -81,10 +84,10 @@ let process_line line =
          wordstr ^ aux rest (col + wordlen)
        else
          (match confirm_input line col end_col with
-          | true ->
+          | "y" | "Y" ->
              let new_word = convert_word wordlst in
              new_word ^ aux rest 0
-          | false -> wordstr ^ aux rest (col + wordlen))
+          | _ -> wordstr ^ aux rest (col + wordlen))
 
     | hd :: tl -> (String.make 1 hd) ^ (aux tl (col+1))
   in
