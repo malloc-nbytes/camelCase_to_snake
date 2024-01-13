@@ -44,18 +44,18 @@ the last letter, it is _not_ camelcase.
 
 # Build
 ```
-cd ./CamelCase_to_snake/src/
+cd ./camelCase_to_snake/src/
 ./build.sh
 ```
 [Note]: (`./build.sh clean` will remove all .cmi and .cmo files.)
 
 # Install
 ```
-cd ./CamelCase_to_snake/src/
+cd ./camelCase_to_snake/src/
+./build clean
+./build
 ./install.sh
 ```
-[Note]: `install.sh` will `./build.sh clean` and then `./build.sh` for you.
-
 <small> *"Just like in code, where snake_case gracefully slithers through the syntax, effortlessly gliding from variable to variable, leaving no humps in its path, it's clear that in the programming desert, snakes are simply superior to camels. No need for extra bumps when you can have the smooth elegance of snake_case."*
 
 \- ChatGPT for some reason </small>
