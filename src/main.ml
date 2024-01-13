@@ -34,6 +34,14 @@ let isalpha c =
   (c >= 65 && c <= 90) || (c >= 97 && c <= 122)
 ;;
 
+let isnum c =
+  let c = int_of_char c in
+  let c = c - int_of_char '0' in
+  (c >= 0) && (c <= 9)
+;;
+
+let isalnum c = isalpha c || isnum c ;;
+
 let is_lowercase c = Char.lowercase_ascii c = c;;
 
 let file_to_str fp =
@@ -107,7 +115,7 @@ let process_line line row =
     | [] -> "\n"
     | hd :: tl when hd = '\n' -> aux tl (col+1)
     | hd :: tl when isalpha hd ->
-       let wordlst, rest = consume_until (hd :: tl) (fun c -> not (isalpha c)) in
+       let wordlst, rest = consume_until (hd :: tl) (fun c -> (not (isalnum c))) in
        let wordstr = List.to_seq wordlst |> String.of_seq in
 
        let wordlen = String.length wordstr in
@@ -151,19 +159,11 @@ let get_dir_contents dir =
     let _ = Printf.printf "[Error]: %s\n" msg in []
 ;;
 
-let rec is_binary filepath i =
-  match i = String.length filepath - 1 with
-  | true -> true
-  | false when filepath.[i] = '.' -> false
-  | false -> is_binary filepath (i+1)
-;;
-
 let rec kill_all_camels_in_file filepath =
   match is_dir filepath with
   | true ->
      let items = get_dir_contents filepath in
      List.iter (fun item -> kill_all_camels_in_file (Filename.concat filepath item)) items
-  | false when is_binary filepath 0 -> ()
   | false ->
      let _ = Printf.printf "[ccts]: File: %s\n" filepath
      and _ = print_string "[ccts]: Replace all? ((y)es/(n)o/(c)ustom): " in
