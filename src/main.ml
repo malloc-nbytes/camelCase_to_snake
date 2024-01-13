@@ -175,7 +175,7 @@ let rec kill_all_camels_in_file filepath =
      List.iter (fun item -> kill_all_camels_in_file (Filename.concat filepath item)) items
   | false ->
      let _ = Printf.printf "[ccts]: File: %s\n" filepath
-     and _ = print_string "[ccts]: Replace all? ((y)es / (n)o / (c)ustom): " in
+     and _ = print_string "[ccts]: Replace all? (y)es / (n)o / (c)ustom: " in
      (match read_line () with
       | "Y" | "y" | "Yes" | "yes" -> let _ = glbl_repl_all := true in
                      write_to_file filepath (ccts filepath)
