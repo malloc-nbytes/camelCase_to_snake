@@ -4,7 +4,7 @@ Kill those camels!
 
 # Description
 This program takes a list of files/directories and will search through each file.
-If a variable encountered is in the camelCase format, it will *_fix_* it and make
+If a identifier encountered is in the camelCase format, it will *_fix_* it and make
 it snake_case.
 
 # Requirements
@@ -20,7 +20,7 @@ If one of the entries is a directory, it will recursively go through each item i
 Before dealing with a file, it will ask what to do, namely: `Replace all? (y)es / (n)o / (c)ustom`.
 If `y` is entered, it will *de-camel-ify* the file, immediately proceeding to the next. If `n` is
 entered, that file will be skipped. If `c` is entered, you will be taken into a mode where you choose
-which variables should be changed by highlighting them and showing the current line (*fancy*).
+which identifiers should be changed by highlighting them and showing the current line (*fancy*).
 When in this custom mode, more options will appear: `Replace? (y)es / (n)o / ! [replace rest]`. The first
 two options are self-explanatory, but the third option `!` will go ahead and kill the rest of the camels in
 the file (including the current selection).
@@ -29,8 +29,8 @@ the file (including the current selection).
 So what even is camel case? In `ccts`, camel case is:
 
 1. The first letter is lowercase
-2. Some variable (except for the first) must be uppercase
-3. If a variable only has one uppercase letter *and* it's
+2. Some letter (except for the first) must be uppercase
+3. If an identifier only has one uppercase letter *and* it's
 the last letter, it is _not_ camelcase.
 
 ### Examples
