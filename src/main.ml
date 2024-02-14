@@ -119,7 +119,7 @@ let process_line line row =
     | [] -> "\n"
     | hd :: tl when hd = '\n' -> aux tl (col+1)
     | hd :: tl when isalpha hd ->
-       let wordlst, rest = consume_until (hd :: tl) (fun c -> (not (isalnum c))) in
+       let wordlst, rest = consume_until (hd :: tl) (fun c -> (not (isalnum c))) in (* TODO: make it understand underscores too. *)
        let wordstr = List.to_seq wordlst |> String.of_seq in
 
        let wordlen = String.length wordstr in
