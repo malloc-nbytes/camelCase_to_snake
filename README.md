@@ -9,6 +9,7 @@ it snake_case.
 
 # Requirements
 * OCaml - https://ocaml.org/install
+* ocamlfind - install from opam, evaluate environment with `eval $(opam env)`
 
 # Usage
 ```
