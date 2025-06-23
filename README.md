@@ -2,6 +2,8 @@
 
 Kill those camels!
 
+__Note:__ This package can be installed through =forge= [ https://github.com/malloc-nbytes/forge ].
+
 # Description
 This program takes a list of files/directories and will search through each file.
 If a identifier encountered is in the camelCase format, it will *_fix_* it and make
